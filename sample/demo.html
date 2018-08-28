@@ -12,11 +12,25 @@
     <script src="../dist/jquery-tagsinput.min.js" defer></script>
   </head>
   <body style="background-color: #ccc; margin: 0;">
-    <input id="fixture" value="First;Second;Third;"/>
+    <div class="container">
+      <div class="row">
+          <div  class="col-sm-12">
+            <div class="form-group">
+              <label>Edit mode</label>
+              <input data-role='tags-input' value="First;Second;Third;"/>
+            </div>
+            <div class="form-group">
+              <label>Read Only mode</label>
+              <input data-role='tags-input' value="First;Second;Third;" disabled />
+            </div>
+              
+          </div>
+      </div>
+    </div>
   </body>
   <script>
     $(document).ready(function() {
-      $('#fixture').tagsInput();
+      $('[data-role="tags-input"]').tagsInput();
     });
   </script>
   

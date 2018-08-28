@@ -14,19 +14,30 @@
   }
 
   .tag {
+    position: relative;
     padding-right: 24px;
     padding-top: 0.4em;
     padding-bottom: 0.4em;
     padding-left: 0.4em;
     font-size: 85%;
+    margin-left: .25rem;
   }
 
   .tag-remove {
     position: absolute;
-    top: 12px;
+    top: 5px;
     cursor: pointer;
     padding-left: 6px;
     font-style: normal;
     font-family: Dejavu Sans;
+  }
+
+  &.disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+
+    .tag {
+      padding-right: 0.4em;
+    }
   }
 }

@@ -6,12 +6,7 @@ describe('Tags-Input', function () {
   });
 
   beforeEach(function () {
-    /* Add id attribute to Tag element to ease the jQuery selector query.
-     * (e.g: fixture, fixture-tags-container and fixture-input) */
-    jQuery('#fixture').tagsInput({
-      tagsContainerTemplate: '<div id="fixture-tags-container" class="tags-container {tagsContainerClass}"><input id="fixture-input" type="text" size="1"><div>',
-      tagTemplate: '<div class="{tagClass}"><span>{value}</span><i class="tag-remove"></i></div>',
-    });
+    jQuery('#fixture').tagsInput();
   });
 
   afterEach(function () {
@@ -33,17 +28,15 @@ describe('Tags-Input', function () {
   it('should render tags (div element) based on the value of the target element during initialization.', function () {
     let $fixture = jQuery('#fixture');
     let sValue = $fixture.val();
-
-    let tValue = (jQuery('#fixture-tags-container').find('span').map(function () {
+    let tValue = ($fixture.next('div').find('span').map(function () {
       return jQuery(this).text();
     }).toArray().join(';')).concat(';');
-
     expect(sValue == tValue).toBe(true);
   });
 
   it('should add new tag when press ENTER in the tags input field.', function () {
-    let $tagsContainer = jQuery('#fixture-tags-container');
-    let $tagsInput = jQuery('#fixture-input');
+    let $tagsContainer = jQuery('#fixture').next('div');
+    let $tagsInput = $tagsContainer.children('input');
     $tagsInput.val('fourth').trigger(jQuery.Event('keydown', {
       key: 'Enter'
     }));
@@ -56,8 +49,8 @@ describe('Tags-Input', function () {
   });
 
   it('should add new tag when press colon(;) the tags input field.', function () {
-    let $tagsContainer = jQuery('#fixture-tags-container');
-    let $tagsInput = jQuery('#fixture-input');
+    let $tagsContainer = jQuery('#fixture').next('div');
+    let $tagsInput = $tagsContainer.children('input');
     $tagsInput.val('fourth').trigger(jQuery.Event('keydown', {
       key: ';'
     }));
@@ -70,8 +63,8 @@ describe('Tags-Input', function () {
   });
 
   it('should add new tag value to the hidden input field.', function () {
-    let $tagsContainer = jQuery('#fixture-tags-container');
-    let $tagsInput = jQuery('#fixture-input');
+    let $tagsContainer = jQuery('#fixture').next('div');
+    let $tagsInput = $tagsContainer.children('input');
     $tagsInput.val('fourth').trigger(jQuery.Event('keydown', {
       key: ';'
     }));
@@ -80,20 +73,23 @@ describe('Tags-Input', function () {
   });
 
   it('should remove selected tag when click the cross "x" of the tag.', function () {
-    let $tagsContainer = jQuery('#fixture-tags-container');
+    let $tagsContainer = jQuery('#fixture').next('div');
     let $spanThird = $tagsContainer.find('span').filter(function () {
       return jQuery(this).text() == 'third';
     });
+    expect($spanThird.closest('body').length).toBe(1);
+    
     $spanThird.siblings('i').click();
 
-    expect($spanThird.closest('body').length == 0).toBe(true);
+    expect($spanThird.closest('body').length).toBe(0);
   });
 
   it('should remove tag value from hidden input field when click the cross "x" of the tag.', function () {
-    let $tagsContainer = jQuery('#fixture-tags-container');
+    let $tagsContainer = jQuery('#fixture').next('div');
     let $spanThird = $tagsContainer.find('span').filter(function () {
       return jQuery(this).text() == 'third';
     });
+
     $spanThird.siblings('i').click();
 
     let value = jQuery('#fixture').val();
@@ -101,7 +97,7 @@ describe('Tags-Input', function () {
   });
 
   it('should prevent same tag value creation', function () {
-    let $tagsInput = jQuery('#fixture-input');
+    let $tagsInput = jQuery('#fixture').next('div').children('input');
     $tagsInput.val('second').click();
 
     let value = jQuery('#fixture').val();

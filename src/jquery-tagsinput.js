@@ -3,24 +3,38 @@
 
   $.fn.tagsInput = function (options) {
     let settings = $.extend({
-      tagClass: 'tag badge badge-primary ml-1',
+      tagClass: 'badge badge-primary',
       tagsContainerClass: 'form-control',
-      tagTemplate: '<div class="{tagClass}"><span>{value}</span><i class="tag-remove">&#10006;</i></div>',
-      tagsContainerTemplate: '<div class="tags-container {tagsContainerClass}"><input type="text" size="1"><div>',
       highlightColor: '#ffc107'
     }, options);
 
     const ATTR_RENDERED = 'data-rendered';
+    const ATTR_DISABLED = 'disabled';
     const TRUE = 'true';
     const helpers = new Helpers();
-    const tagTemplate = settings.tagTemplate.replace('{tagClass}', helpers.sanitizeText(settings.tagClass));
-    const tagsContainerTemplate = settings.tagsContainerTemplate.replace('{tagsContainerClass}', helpers.sanitizeText(settings.tagsContainerClass));
+    const tagRemoveIconTemplate = '<i class="tag-remove">&#10006;</i>';
+    const tagTemplate = function(isDisabled) {
+      return helpers.fillIn('<div class="tag {tagClass}"><span>{value}</span>{tagRemoveIcon}</div>', {
+        'tagClass' : helpers.sanitizeText(settings.tagClass),
+        'tagRemoveIcon' : isDisabled? '' : tagRemoveIconTemplate
+      });
+    }
+    const tagsContainerTemplate = function(isDisabled) {
+      return helpers.fillIn('<div class="tags-container {tagsContainerClass} {state}"><input type="text" size="1" {state}><div>', {
+        'tagsContainerClass' : helpers.sanitizeText(settings.tagsContainerClass),
+        'state' : isDisabled? 'disabled' : ''
+      });
+    }
 
     /** Render TagsInput elements */
     this.each(function () {
       if (this.hasAttribute(ATTR_RENDERED)) {
         return;
       }
+
+      const isDisabled = this.hasAttribute(ATTR_DISABLED);
+      const tTag = tagTemplate(isDisabled);
+      const tTagsContainer = tagsContainerTemplate(isDisabled);
 
       let $that = $(this);
       let tagElems = [];
@@ -29,32 +43,35 @@
         $.each(hiddenValue.split(';'), function (index, value) {
           let v = value.trim();
           if (v.length > 0) {
-            tagElems.unshift(jQuery(tagTemplate.replace('{value}', v)));
+            tagElems.unshift(jQuery(tTag.replace('{value}', v)));
           }
         });
       }
 
-      let tagsContainerElem = $(tagsContainerTemplate);
+      let tagsContainerElem = $(tTagsContainer);
       $.each(tagElems, function (index, value) {
         tagsContainerElem.prepend(value);
       });
       $that.after(tagsContainerElem);
       $that.attr('hidden', TRUE);
       $that.attr(ATTR_RENDERED, TRUE);
+      
+      
     });
 
     /** Register events */
     $('i.tag-remove').click(helpers.removeTag);
 
-    $('.tags-container').click(function (e) {
+    $('.tags-container').not('disabled').click(function (e) {
       $(this).children('input').focus();
     });
 
-    $('.tags-container > input').bind('input', function (e) {
+    $('.tags-container').not('disabled').children('input').bind('input', function (e) {
       helpers.resetSize(this);
     });
 
-    $('.tags-container > input').keydown(function (e) {
+    const activeTagTemplate = tagTemplate(false);
+    $('.tags-container').not('disabled').children('input').keydown(function (e) {  
       if (e.key === 'Enter' || e.key === ';') {
         e.preventDefault();
         let input = $(e.currentTarget);
@@ -70,7 +87,7 @@
             }
             helpers.blink(existingSpan, settings.highlightColor, settings.tagColor);
           } else {
-            let newTag = $(tagTemplate.replace('{value}', value));
+            let newTag = $(activeTagTemplate.replace('{value}', value));
             newTag.insertBefore(input);
             newTag.children('i').click(helpers.removeTag);
 
@@ -99,9 +116,10 @@
   }
 
   Helpers.prototype.removeTag = function (e) {
-    let parent = $(this).parent();
+    let $that = $(this);
+    let parent = $that.parent();
     let hiddenInput = parent.parent().prev();
-    let text = parent.text();
+    let text = $that.siblings('span').text();
     let hValue = hiddenInput.val();
     let pattern = '(^'.concat(text).concat(';)|(;').concat(text).concat(';)');
     let result = hValue.replace(new RegExp(pattern, 'u'), ';');
@@ -123,5 +141,11 @@
       }, 200);
     });
   }
+
+  Helpers.prototype.fillIn = function(stringTemplate, variables) {
+    return stringTemplate.replace(new RegExp("\{([^\{]+)\}", "g"), function(_unused, varName){
+        return variables[varName] === undefined? '{'.concat(varName).concat('}') : variables[varName];
+    });
+}
 
 })(jQuery);
