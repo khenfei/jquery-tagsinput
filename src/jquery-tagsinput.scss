@@ -1,7 +1,10 @@
 .tags-container {
   padding-left: 0;
   height: unset;
-  
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  line-height: 1.75;
+
   input {
     background-color: transparent;
     border: none;
