@@ -2,7 +2,7 @@
   'use strict';
 
   $.fn.tagsInput = function (options) {
-    let settings = $.extend({
+    const settings = $.extend({
       tagClass: 'badge badge-primary',
       tagsContainerClass: 'form-control',
       highlightColor: '#ffc107'
@@ -36,19 +36,19 @@
       const tTag = tagTemplate(isDisabled);
       const tTagsContainer = tagsContainerTemplate(isDisabled);
 
-      let $that = $(this);
-      let tagElems = [];
-      let hiddenValue = $that.val();
+      const $that = $(this);
+      const tagElems = [];
+      const hiddenValue = $that.val();
       if (hiddenValue) {
         $.each(hiddenValue.split(';'), function (index, value) {
-          let v = value.trim();
+          const v = value.trim();
           if (v.length > 0) {
             tagElems.unshift(jQuery(tTag.replace('{value}', v)));
           }
         });
       }
 
-      let tagsContainerElem = $(tTagsContainer);
+      const tagsContainerElem = $(tTagsContainer);
       $.each(tagElems, function (index, value) {
         tagsContainerElem.prepend(value);
       });
@@ -74,11 +74,11 @@
     $('.tags-container').not('disabled').children('input').keydown(function (e) {  
       if (e.key === 'Enter' || e.key === ';') {
         e.preventDefault();
-        let input = $(e.currentTarget);
+        const input = $(e.currentTarget);
         let value = input.val().trim();
         if (value) {
           value = helpers.sanitizeText(value);
-          let existingSpan = input.siblings('div').filter(function () {
+          const existingSpan = input.siblings('div').filter(function () {
             return ($(this).find('span').text() === value);
           });
           if (existingSpan.length > 0) {
@@ -87,11 +87,11 @@
             }
             helpers.blink(existingSpan, settings.highlightColor, settings.tagColor);
           } else {
-            let newTag = $(activeTagTemplate.replace('{value}', value));
+            const newTag = $(activeTagTemplate.replace('{value}', value));
             newTag.insertBefore(input);
             newTag.children('i').click(helpers.removeTag);
 
-            let hiddenInput = $(this).parent().prev();
+            const hiddenInput = $(this).parent().prev();
             let oValue = hiddenInput.val();
             if (oValue.length > 0 && oValue.charAt(oValue.length - 1) != ';') {
               oValue += ';';
@@ -110,19 +110,19 @@
   function Helpers() {}
 
   Helpers.prototype.resetSize = function (target) {
-    let $target = $(target);
-    let len = $target.val().length;
+    const $target = $(target);
+    const len = $target.val().length;
     $target.attr('size', (len < 1) ? 1 : len);
   }
 
   Helpers.prototype.removeTag = function (e) {
-    let $that = $(this);
-    let parent = $that.parent();
-    let hiddenInput = parent.parent().prev();
-    let text = $that.siblings('span').text();
-    let hValue = hiddenInput.val();
-    let pattern = '(^'.concat(text).concat(';)|(;').concat(text).concat(';)');
-    let result = hValue.replace(new RegExp(pattern, 'u'), ';');
+    const $that = $(this);
+    const parent = $that.parent();
+    const hiddenInput = parent.parent().prev();
+    const text = $that.siblings('span').text();
+    const hValue = hiddenInput.val();
+    const pattern =  `(^${text};)|(;${text};)`;
+    const result = hValue.replace(new RegExp(pattern, 'u'), ';');
     hiddenInput.val(result);
     parent.remove();
   }
@@ -132,7 +132,7 @@
   }
 
   Helpers.prototype.blink = function (target, highlightColor, tagColor) {
-    let $target = $(target);
+    const $target = $(target);
     $target.stop().animate({
       backgroundColor: highlightColor
     }, 200).promise().done(function () {

@@ -5,6 +5,17 @@ This plugin has several dependencies:
 - jQuery Color Plus Name 2
 - Bootstrap v4
 
+## Compilation
+
+```Bash
+git clone git@github.com:khenfei/jquery-tagsinput.git
+cd jquery-tagsinput
+npm install #Setup necessary dependencies.
+npm run-script test #Verify all test passed. [Optional]
+npm run-script build #Build the project.
+```
+
+The minified js (including its source map) and css can be found in dist/ folder.
 
 ## Instructions
 
